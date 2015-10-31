@@ -1,0 +1,25 @@
+{
+  "name": "newrelic-api",
+  "version": "1.0.0",
+  "description": "Connect to newrelic.com API v2x",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdibaiee/newrelic-api.git"
+  },
+  "keywords": [
+    "newrelic",
+    "api",
+    "http",
+    "rest"
+  ],
+  "author": "Mahdi Dibaiee <mdibaiee@aol.com> (http://dibaiee.ir/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mdibaiee/newrelic-api/issues"
+  },
+  "homepage": "https://github.com/mdibaiee/newrelic-api#readme"
+}
