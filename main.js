@@ -8,7 +8,7 @@ export default class Client {
    * @param  {Object} options newrelic options:
    *                          - key: rest api key
    */
-  constructor(options = {}) {
+  constructor(options) {
     Object.assign(this, options);
   }
 
@@ -29,8 +29,8 @@ export default class Client {
    * @return {Promise}
    */
   app(params = {}) {
-    let { app } = params;
-    return this.call(`applications/${app}.json`, params).then(response => {
+    let id = params.app;
+    return this.call(`applications/${id}.json`, params).then(response => {
       return response.application;
     });
   }
