@@ -7,9 +7,6 @@ export default class Client {
    * Create a new newrelic client instance
    * @param  {Object} options newrelic options:
    *                          - key: rest api key
-   *                          - app: application id
-   *                          - host: host id
-   *                          - instance: instance id
    */
   constructor(options = {}) {
     Object.assign(this, options);
@@ -20,7 +17,7 @@ export default class Client {
    * @param  {Object} params
    * @return {Promise}       list of applications
    */
-  list(params = {}) {
+  apps(params = {}) {
     return this.call('applications.json', params).then(response => {
       return response.applications;
     });
@@ -32,7 +29,8 @@ export default class Client {
    * @return {Promise}
    */
   app(params = {}) {
-    return this.call('applications/${APP}.json', params).then(response => {
+    let { app } = params;
+    return this.call(`applications/${app}.json`, params).then(response => {
       return response.application;
     });
   }
@@ -43,7 +41,11 @@ export default class Client {
    * @return {Promise}
    */
   metrics(params = {}) {
-    let id = this.host ? '${HOST}' : '${INSTANCE}';
+    let {host, instance, app} = params;
+    let id;
+    if (params.host) id = `/hosts/${host}`;
+    else if (params.instance) id = `/instances/${instance}`;
+    else id = '';
 
     // defaults to (15 minutes ago - now)
     let d = new Date();
@@ -51,7 +53,7 @@ export default class Client {
     let from = new Date(d - fifteen);
     params.from = from.toISOString();
 
-    const url = 'applications/${APP}/hosts/' + id + '/metrics/data.json';
+    const url = `applications/${app}${id}/metrics/data.json`;
     return this.call(url, params)
     .then(response => {
       return response.metric_data;
@@ -82,6 +84,27 @@ export default class Client {
   }
 
   /**
+   * Average apdex score
+   * @param  {Object} params
+   * @return {Promise}
+   */
+  apdex(params = {}) {
+    params.summarize = true;
+    params.names = ['Apdex', 'EndUser/Apdex'];
+
+    return this.metrics(params).then(response => {
+      let apdex = response.metrics.find(i => i.name === 'Apdex');
+      let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
+
+      return {
+        apdex: apdex.timeslices[0].score,
+        enduser: enduser.timeslices[0].score,
+        average: (apdex.timeslices[0] + enduser.timeslices[0].score) / 2
+      };
+    })
+  }
+
+  /**
    * Calls a request to newrelic API for the specified method with given
    * parameters
    * @param  {String} method API method
@@ -90,10 +113,6 @@ export default class Client {
    * @return {Promise}
    */
   call(method, params = {}) {
-    method = method.replace('${APP}', this.app)
-                   .replace('${HOST}', this.host)
-                   .replace('${INSTANCE}', this.instance);
-
     let url = API + method;
     let request = unirest.get(url).header('X-Api-Key', this.key);
 
@@ -110,7 +129,6 @@ export default class Client {
 
     return new Promise((resolve, reject) => {
       request.end(response => {
-        console.log('response', response.body);
         if (response.error) reject(response.error);
         else resolve(response.body);
       });
