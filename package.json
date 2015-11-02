@@ -1,8 +1,8 @@
 {
   "name": "newrelic-api",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Connect to newrelic.com API v2x",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/mdibaiee/newrelic-api#readme",
   "dependencies": {
+    "babel-core": "6.0.16",
+    "babel-preset-es2015": "6.0.15",
     "qs": "5.2.0",
     "unirest": "0.4.2"
   }
