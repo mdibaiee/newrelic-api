@@ -90,7 +90,6 @@ var Client = (function () {
       params.from = from.toISOString();
 
       var url = 'applications/' + app + id + '/metrics/data.json';
-      console.log(url);
       return this.call(url, params).then(function (response) {
         return response.metric_data;
       });
@@ -154,7 +153,6 @@ var Client = (function () {
       params.summarize = true;
       params.names = ['Apdex', 'EndUser/Apdex'];
 
-      console.log('this.metrics(' + params + ')');
       return this.metrics(params).then(function (response) {
         var result = response.metrics.find(function (i) {
           return i.name === 'Apdex';
@@ -162,7 +160,6 @@ var Client = (function () {
         var enduser = response.metrics.find(function (i) {
           return i.name === 'EndUser/Apdex';
         });
-        console.log(result.timeslices[0].score);
 
         return {
           apdex: result.timeslices[0].score,
@@ -187,9 +184,7 @@ var Client = (function () {
       var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       var url = API + method;
-      var request = _unirest2.default.get(url).header('X-Api-Key', this.key);
-
-      request.query('?' + _qs2.default.stringify(params));
+      var request = _unirest2.default.get(url).header('X-Api-Key', this.key).query(_qs2.default.stringify(params, { arrayFormat: 'brackets' }));
 
       return new Promise(function (resolve, reject) {
         request.end(function (response) {
