@@ -189,16 +189,7 @@ var Client = (function () {
       var url = API + method;
       var request = _unirest2.default.get(url).header('X-Api-Key', this.key);
 
-      // for (let key of Object.keys(params)) {
-      //   if (Array.isArray(params[key])) {
-      //     params[key].forEach(el => {
-      //       request.query(key + '[]=' + el);
-      //     });
-      //
-      //     delete params[key];
-      //   }
-      // }
-      request.query(_qs2.default.stringify(params));
+      request.query('?' + _qs2.default.stringify(params));
 
       return new Promise(function (resolve, reject) {
         request.end(function (response) {
