@@ -54,7 +54,6 @@ export default class Client {
     params.from = from.toISOString();
 
     const url = `applications/${app}${id}/metrics/data.json`;
-    console.log(url);
     return this.call(url, params)
     .then(response => {
       return response.metric_data;
@@ -93,11 +92,9 @@ export default class Client {
     params.summarize = true;
     params.names = ['Apdex', 'EndUser/Apdex'];
 
-    console.log('this.metrics(' + params + ')')
     return this.metrics(params).then(response => {
       let result = response.metrics.find(i => i.name === 'Apdex');
       let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
-      console.log(result.timeslices[0].score);
 
       return {
         apdex: result.timeslices[0].score,
@@ -117,9 +114,9 @@ export default class Client {
    */
   call(method, params = {}) {
     let url = API + method;
-    let request = unirest.get(url).header('X-Api-Key', this.key);
-
-    request.query('?' + qs.stringify(params));
+    let request = unirest.get(url)
+                  .header('X-Api-Key', this.key)
+                  .query(qs.stringify(params, { arrayFormat: 'brackets' }));
 
     return new Promise((resolve, reject) => {
       request.end(response => {
