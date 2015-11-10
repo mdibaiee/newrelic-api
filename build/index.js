@@ -90,6 +90,7 @@ var Client = (function () {
       params.from = from.toISOString();
 
       var url = 'applications/' + app + id + '/metrics/data.json';
+      console.log(url);
       return this.call(url, params).then(function (response) {
         return response.metric_data;
       });
@@ -153,6 +154,7 @@ var Client = (function () {
       params.summarize = true;
       params.names = ['Apdex', 'EndUser/Apdex'];
 
+      console.log('this.metrics(' + params + ')');
       return this.metrics(params).then(function (response) {
         var result = response.metrics.find(function (i) {
           return i.name === 'Apdex';
@@ -160,6 +162,7 @@ var Client = (function () {
         var enduser = response.metrics.find(function (i) {
           return i.name === 'EndUser/Apdex';
         });
+        console.log(result.timeslices[0].score);
 
         return {
           apdex: result.timeslices[0].score,
