@@ -95,11 +95,15 @@ export default class Client {
     return this.metrics(params).then(response => {
       let result = response.metrics.find(i => i.name === 'Apdex');
       let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
+      let scores = {
+        apdex: result.timeslices[0].values.score,
+        enduser: enduser.timeslices[0].values.score
+      };
 
       return {
-        apdex: result.timeslices[0].score,
-        enduser: enduser.timeslices[0].score,
-        average: (result.timeslices[0] + enduser.timeslices[0].score) / 2
+        apdex: scores.apdex,
+        enduser: scores.enduser,
+        average: (scores.apdex + scores.enduser) / 2
       };
     })
   }

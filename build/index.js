@@ -150,11 +150,15 @@ var Client = (function () {
         var enduser = response.metrics.find(function (i) {
           return i.name === 'EndUser/Apdex';
         });
+        var scores = {
+          apdex: result.timeslices[0].values.score,
+          enduser: enduser.timeslices[0].values.score
+        };
 
         return {
-          apdex: result.timeslices[0].score,
-          enduser: enduser.timeslices[0].score,
-          average: (result.timeslices[0] + enduser.timeslices[0].score) / 2
+          apdex: scores.apdex,
+          enduser: scores.enduser,
+          average: (scores.apdex + scores.enduser) / 2
         };
       });
     }
