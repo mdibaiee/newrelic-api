@@ -137,14 +137,24 @@ var Client = (function () {
 
   }, {
     key: 'apdex',
-    value: function apdex() {
+    value: (function (_apdex) {
+      function apdex() {
+        return _apdex.apply(this, arguments);
+      }
+
+      apdex.toString = function () {
+        return _apdex.toString();
+      };
+
+      return apdex;
+    })(function () {
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
       params.summarize = true;
       params.names = ['Apdex', 'EndUser/Apdex'];
 
       return this.metrics(params).then(function (response) {
-        var apdex = response.metrics.find(function (i) {
+        var result = response.metrics.find(function (i) {
           return i.name === 'Apdex';
         });
         var enduser = response.metrics.find(function (i) {
@@ -152,12 +162,12 @@ var Client = (function () {
         });
 
         return {
-          apdex: apdex.timeslices[0].score,
+          apdex: result.timeslices[0].score,
           enduser: enduser.timeslices[0].score,
           average: (apdex.timeslices[0] + enduser.timeslices[0].score) / 2
         };
       });
-    }
+    })
 
     /**
      * Calls a request to newrelic API for the specified method with given
@@ -176,42 +186,16 @@ var Client = (function () {
       var url = API + method;
       var request = _unirest2.default.get(url).header('X-Api-Key', this.key);
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        var _loop = function _loop() {
-          var key = _step.value;
-
-          if (Array.isArray(params[key])) {
-            params[key].forEach(function (el) {
-              request.query(key + '[]=' + el);
-            });
-
-            delete params[key];
-          }
-        };
-
-        for (var _iterator = Object.keys(params)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          _loop();
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      request.query(params);
+      // for (let key of Object.keys(params)) {
+      //   if (Array.isArray(params[key])) {
+      //     params[key].forEach(el => {
+      //       request.query(key + '[]=' + el);
+      //     });
+      //
+      //     delete params[key];
+      //   }
+      // }
+      request.query(_qs2.default.stringify(params));
 
       return new Promise(function (resolve, reject) {
         request.end(function (response) {

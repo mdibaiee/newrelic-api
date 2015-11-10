@@ -93,11 +93,11 @@ export default class Client {
     params.names = ['Apdex', 'EndUser/Apdex'];
 
     return this.metrics(params).then(response => {
-      let apdex = response.metrics.find(i => i.name === 'Apdex');
+      let result = response.metrics.find(i => i.name === 'Apdex');
       let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
 
       return {
-        apdex: apdex.timeslices[0].score,
+        apdex: result.timeslices[0].score,
         enduser: enduser.timeslices[0].score,
         average: (apdex.timeslices[0] + enduser.timeslices[0].score) / 2
       };
@@ -116,16 +116,16 @@ export default class Client {
     let url = API + method;
     let request = unirest.get(url).header('X-Api-Key', this.key);
 
-    for (let key of Object.keys(params)) {
-      if (Array.isArray(params[key])) {
-        params[key].forEach(el => {
-          request.query(key + '[]=' + el);
-        });
-
-        delete params[key];
-      }
-    }
-    request.query(params);
+    // for (let key of Object.keys(params)) {
+    //   if (Array.isArray(params[key])) {
+    //     params[key].forEach(el => {
+    //       request.query(key + '[]=' + el);
+    //     });
+    //
+    //     delete params[key];
+    //   }
+    // }
+    request.query(qs.stringify(params));
 
     return new Promise((resolve, reject) => {
       request.end(response => {
