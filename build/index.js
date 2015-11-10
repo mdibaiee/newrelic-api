@@ -137,17 +137,7 @@ var Client = (function () {
 
   }, {
     key: 'apdex',
-    value: (function (_apdex) {
-      function apdex() {
-        return _apdex.apply(this, arguments);
-      }
-
-      apdex.toString = function () {
-        return _apdex.toString();
-      };
-
-      return apdex;
-    })(function () {
+    value: function apdex() {
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
       params.summarize = true;
@@ -164,10 +154,10 @@ var Client = (function () {
         return {
           apdex: result.timeslices[0].score,
           enduser: enduser.timeslices[0].score,
-          average: (apdex.timeslices[0] + enduser.timeslices[0].score) / 2
+          average: (result.timeslices[0] + enduser.timeslices[0].score) / 2
         };
       });
-    })
+    }
 
     /**
      * Calls a request to newrelic API for the specified method with given

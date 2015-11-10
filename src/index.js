@@ -99,7 +99,7 @@ export default class Client {
       return {
         apdex: result.timeslices[0].score,
         enduser: enduser.timeslices[0].score,
-        average: (apdex.timeslices[0] + enduser.timeslices[0].score) / 2
+        average: (result.timeslices[0] + enduser.timeslices[0].score) / 2
       };
     })
   }

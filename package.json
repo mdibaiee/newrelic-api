@@ -1,6 +1,6 @@
 {
   "name": "newrelic-api",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Connect to newrelic.com API v2",
   "main": "build/index.js",
   "scripts": {
