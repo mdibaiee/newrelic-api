@@ -1,10 +1,14 @@
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _unirest = require('unirest');
 
@@ -13,10 +17,6 @@ var _unirest2 = _interopRequireDefault(_unirest);
 var _qs = require('qs');
 
 var _qs2 = _interopRequireDefault(_qs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var API = 'https://api.newrelic.com/v2/';
 
@@ -54,7 +54,6 @@ var Client = (function () {
      * @param  {Object} params
      * @return {Promise}
      */
-
   }, {
     key: 'app',
     value: function app() {
@@ -71,7 +70,6 @@ var Client = (function () {
      * @param  {Object} params
      * @return {Promise}
      */
-
   }, {
     key: 'metrics',
     value: function metrics() {
@@ -100,7 +98,6 @@ var Client = (function () {
      * @param  {Object} params
      * @return {Promise}
      */
-
   }, {
     key: 'error',
     value: function error() {
@@ -134,7 +131,6 @@ var Client = (function () {
      * @param  {Object} params
      * @return {Promise}
      */
-
   }, {
     key: 'apdex',
     value: function apdex() {
@@ -171,14 +167,13 @@ var Client = (function () {
      * @param  {Object} params extra parameters passed as query
      * @return {Promise}
      */
-
   }, {
     key: 'call',
     value: function call(method) {
       var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       var url = API + method;
-      var request = _unirest2.default.get(url).header('X-Api-Key', this.key).query(_qs2.default.stringify(params, { arrayFormat: 'brackets' }));
+      var request = _unirest2['default'].get(url).header('X-Api-Key', this.key).query(_qs2['default'].stringify(params, { arrayFormat: 'brackets' }));
 
       return new Promise(function (resolve, reject) {
         request.end(function (response) {
@@ -191,4 +186,5 @@ var Client = (function () {
   return Client;
 })();
 
-exports.default = Client;
+exports['default'] = Client;
+module.exports = exports['default'];
