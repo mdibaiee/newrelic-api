@@ -94,7 +94,7 @@ var Client = (function () {
     }
 
     /**
-     * Average error rate
+     * Error rate
      * @param  {Object} params
      * @return {Promise}
      */
@@ -102,31 +102,59 @@ var Client = (function () {
     key: 'error',
     value: function error() {
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var response, errors, otherTransaction, httpDispatcher;
+      return regeneratorRuntime.async(function error$(context$2$0) {
+        while (1) switch (context$2$0.prev = context$2$0.next) {
+          case 0:
+            params.names = ['Errors/all', 'HttpDispatcher', 'OtherTransaction/all'];
 
-      params.names = ['Errors/all', 'HttpDispatcher', 'OtherTransaction/all'];
-      return this.metrics(params).then(function (response) {
-        var errors = response.metrics.find(function (i) {
-          return i.name === 'Errors/all';
-        });
-        var ot = response.metrics.find(function (i) {
-          return i.name === 'OtherTransaction/all';
-        });
-        var hd = response.metrics.find(function (i) {
-          return i.name === 'HttpDispatcher';
-        });
+            context$2$0.next = 3;
+            return regeneratorRuntime.awrap(this.metrics(params));
 
-        var errorCount = errors.timeslices[0].values.error_count;
-        var otcc = ot.timeslices[0].values.call_count;
-        var hdcc = hd.timeslices[0].values.call_count;
+          case 3:
+            response = context$2$0.sent;
+            errors = response.metrics.find(function (i) {
+              return i.name === 'Errors/all';
+            });
+            otherTransaction = response.metrics.find(function (i) {
+              return i.name === 'OtherTransaction/all';
+            });
+            httpDispatcher = response.metrics.find(function (i) {
+              return i.name === 'HttpDispatcher';
+            });
+            return context$2$0.abrupt('return', {
+              errors: errors, otherTransaction: otherTransaction, httpDispatcher: httpDispatcher
+            });
 
-        if (errorCount === 0 || otcc + hdcc === 0) return 0;
-
-        return 100 * errorCount / (otcc + hdcc);
-      });
+          case 8:
+          case 'end':
+            return context$2$0.stop();
+        }
+      }, null, this);
     }
 
     /**
-     * Average apdex score
+     * Takes error, otherTransaction and httpDispatcher timeslices and returns
+     * the average error rate
+     * @param  {Timeslice} error
+     * @param  {Timeslice} otherTransacation
+     * @param  {Timeslice} httpDispatcher
+     * @return {Number}
+     */
+  }, {
+    key: 'averageError',
+    value: function averageError(error, otherTransaction, httpDispatcher) {
+      var errorCount = error.values.error_count;
+      var otcc = otherTransaction.values.call_count;
+      var hdcc = httpDispatcher.values.call_count;
+
+      if (errorCount === 0 || otcc + hdcc === 0) return 0;
+
+      return 100 * errorCount / (otcc + hdcc);
+    }
+
+    /**
+     * Apdex score
      * @param  {Object} params
      * @return {Promise}
      */
@@ -134,27 +162,44 @@ var Client = (function () {
     key: 'apdex',
     value: function apdex() {
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var response, apdex, enduser;
+      return regeneratorRuntime.async(function apdex$(context$2$0) {
+        while (1) switch (context$2$0.prev = context$2$0.next) {
+          case 0:
+            params.names = ['Apdex', 'EndUser/Apdex'];
 
-      params.names = ['Apdex', 'EndUser/Apdex'];
+            context$2$0.next = 3;
+            return regeneratorRuntime.awrap(this.metrics(params));
 
-      return this.metrics(params).then(function (response) {
-        var result = response.metrics.find(function (i) {
-          return i.name === 'Apdex';
-        });
-        var enduser = response.metrics.find(function (i) {
-          return i.name === 'EndUser/Apdex';
-        });
-        var scores = {
-          apdex: result.timeslices[0].values.score,
-          enduser: enduser.timeslices[0].values.score
-        };
+          case 3:
+            response = context$2$0.sent;
+            apdex = response.metrics.find(function (i) {
+              return i.name === 'Apdex';
+            });
+            enduser = response.metrics.find(function (i) {
+              return i.name === 'EndUser/Apdex';
+            });
+            return context$2$0.abrupt('return', {
+              apdex: apdex, enduser: enduser
+            });
 
-        return {
-          apdex: scores.apdex,
-          enduser: scores.enduser,
-          average: (scores.apdex + scores.enduser) / 2
-        };
-      });
+          case 7:
+          case 'end':
+            return context$2$0.stop();
+        }
+      }, null, this);
+    }
+
+    /**
+     * Takes apdex and enduser timeslices and returns average apdex score
+     * @param  {Timeslice} apdex
+     * @param  {Timeslice} enduser
+     * @return {Number}
+     */
+  }, {
+    key: 'averageApdex',
+    value: function averageApdex(apdex, enduser) {
+      return (apdex.values.score + enduser.values.score) / 2;
     }
 
     /**

@@ -65,17 +65,17 @@ export default class Client {
    * @param  {Object} params
    * @return {Promise}
    */
-  error(params = {}) {
+  async error(params = {}) {
     params.names = ['Errors/all', 'HttpDispatcher', 'OtherTransaction/all'];
-    return this.metrics(params).then(response => {
-      let errors = response.metrics.find(i => i.name === 'Errors/all');
-      let otherTransaction = response.metrics.find(i => i.name === 'OtherTransaction/all');
-      let httpDispatcher = response.metrics.find(i => i.name === 'HttpDispatcher');
 
-      return {
-        errors, otherTransaction, httpDispatcher
-      }
-    });
+    let response = await this.metrics(params)
+    let errors = response.metrics.find(i => i.name === 'Errors/all');
+    let otherTransaction = response.metrics.find(i => i.name === 'OtherTransaction/all');
+    let httpDispatcher = response.metrics.find(i => i.name === 'HttpDispatcher');
+
+    return {
+      errors, otherTransaction, httpDispatcher
+    }
   }
 
   /**
@@ -86,7 +86,7 @@ export default class Client {
    * @param  {Timeslice} httpDispatcher
    * @return {Number}
    */
-  averageError(error, otherTransacation, httpDispatcher) {
+  averageError(error, otherTransaction, httpDispatcher) {
     let errorCount = error.values.error_count;
     let otcc = otherTransaction.values.call_count;
     let hdcc = httpDispatcher.values.call_count;
@@ -101,24 +101,24 @@ export default class Client {
    * @param  {Object} params
    * @return {Promise}
    */
-  apdex(params = {}) {
+  async apdex(params = {}) {
     params.names = ['Apdex', 'EndUser/Apdex'];
 
-    return this.metrics(params).then(response => {
-      let apdex = response.metrics.find(i => i.name === 'Apdex');
-      let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
+    let response = await this.metrics(params);
 
-      return {
-        apdex, enduser
-      };
-    })
+    let apdex = response.metrics.find(i => i.name === 'Apdex');
+    let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
+
+    return {
+      apdex, enduser
+    };
   }
 
   /**
    * Takes apdex and enduser timeslices and returns average apdex score
    * @param  {Timeslice} apdex
    * @param  {Timeslice} enduser
-   * @return {Number}       
+   * @return {Number}
    */
   averageApdex(apdex, enduser) {
     return (apdex.values.score + enduser.values.score) / 2;
