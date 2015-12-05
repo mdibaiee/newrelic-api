@@ -103,7 +103,6 @@ var Client = (function () {
     value: function error() {
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      params.summarize = true;
       params.names = ['Errors/all', 'HttpDispatcher', 'OtherTransaction/all'];
       return this.metrics(params).then(function (response) {
         var errors = response.metrics.find(function (i) {
@@ -136,7 +135,6 @@ var Client = (function () {
     value: function apdex() {
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      params.summarize = true;
       params.names = ['Apdex', 'EndUser/Apdex'];
 
       return this.metrics(params).then(function (response) {

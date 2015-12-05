@@ -66,7 +66,6 @@ export default class Client {
    * @return {Promise}
    */
   error(params = {}) {
-    params.summarize = true;
     params.names = ['Errors/all', 'HttpDispatcher', 'OtherTransaction/all'];
     return this.metrics(params).then(response => {
       let errors = response.metrics.find(i => i.name === 'Errors/all');
@@ -89,7 +88,6 @@ export default class Client {
    * @return {Promise}
    */
   apdex(params = {}) {
-    params.summarize = true;
     params.names = ['Apdex', 'EndUser/Apdex'];
 
     return this.metrics(params).then(response => {
