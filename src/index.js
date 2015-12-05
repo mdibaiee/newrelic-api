@@ -61,7 +61,7 @@ export default class Client {
   }
 
   /**
-   * Average error rate
+   * Error rate
    * @param  {Object} params
    * @return {Promise}
    */
@@ -69,21 +69,35 @@ export default class Client {
     params.names = ['Errors/all', 'HttpDispatcher', 'OtherTransaction/all'];
     return this.metrics(params).then(response => {
       let errors = response.metrics.find(i => i.name === 'Errors/all');
-      let ot = response.metrics.find(i => i.name === 'OtherTransaction/all');
-      let hd = response.metrics.find(i => i.name === 'HttpDispatcher');
+      let otherTransaction = response.metrics.find(i => i.name === 'OtherTransaction/all');
+      let httpDispatcher = response.metrics.find(i => i.name === 'HttpDispatcher');
 
-      let errorCount = errors.timeslices[0].values.error_count;
-      let otcc = ot.timeslices[0].values.call_count;
-      let hdcc = hd.timeslices[0].values.call_count;
-
-      if (errorCount === 0 || otcc + hdcc === 0) return 0;
-
-      return 100 * errorCount / (otcc + hdcc);
+      return {
+        errors, otherTransaction, httpDispatcher
+      }
     });
   }
 
   /**
-   * Average apdex score
+   * Takes error, otherTransaction and httpDispatcher timeslices and returns
+   * the average error rate
+   * @param  {Timeslice} error
+   * @param  {Timeslice} otherTransacation
+   * @param  {Timeslice} httpDispatcher
+   * @return {Number}
+   */
+  averageError(error, otherTransacation, httpDispatcher) {
+    let errorCount = error.values.error_count;
+    let otcc = otherTransaction.values.call_count;
+    let hdcc = httpDispatcher.values.call_count;
+
+    if (errorCount === 0 || otcc + hdcc === 0) return 0;
+
+    return 100 * errorCount / (otcc + hdcc);
+  }
+
+  /**
+   * Apdex score
    * @param  {Object} params
    * @return {Promise}
    */
@@ -91,19 +105,23 @@ export default class Client {
     params.names = ['Apdex', 'EndUser/Apdex'];
 
     return this.metrics(params).then(response => {
-      let result = response.metrics.find(i => i.name === 'Apdex');
+      let apdex = response.metrics.find(i => i.name === 'Apdex');
       let enduser = response.metrics.find(i => i.name === 'EndUser/Apdex');
-      let scores = {
-        apdex: result.timeslices[0].values.score,
-        enduser: enduser.timeslices[0].values.score
-      };
 
       return {
-        apdex: scores.apdex,
-        enduser: scores.enduser,
-        average: (scores.apdex + scores.enduser) / 2
+        apdex, enduser
       };
     })
+  }
+
+  /**
+   * Takes apdex and enduser timeslices and returns average apdex score
+   * @param  {Timeslice} apdex
+   * @param  {Timeslice} enduser
+   * @return {Number}       
+   */
+  averageApdex(apdex, enduser) {
+    return (apdex.values.score + enduser.values.score) / 2;
   }
 
   /**
